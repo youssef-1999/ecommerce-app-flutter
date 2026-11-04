@@ -19,6 +19,7 @@ import '../../features/auth/data/data_source/auth_data_source.dart' as _i364;
 import '../../features/auth/data/repository/auth_repo_impl.dart' as _i751;
 import '../../features/auth/domain/repository/auth_repo.dart' as _i976;
 import '../../features/auth/domain/usecases/login_usecase.dart' as _i188;
+import '../../features/auth/domain/usecases/register_usecase.dart' as _i941;
 import '../../features/auth/presentation/view_model/auth_cubit.dart' as _i208;
 import 'module/dio.module.dart' as _i688;
 
@@ -40,10 +41,14 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i364.AuthRemoteDataSource(gh<_i302.AuthApi>()));
     gh.factory<_i976.AuthRepo>(
         () => _i751.AuthRepoImpl(gh<_i364.AuthDataSource>()));
+    gh.factory<_i941.RegisterUsecase>(
+        () => _i941.RegisterUsecase(gh<_i976.AuthRepo>()));
     gh.factory<_i188.LoginUsecase>(
         () => _i188.LoginUsecase(authRepo: gh<_i976.AuthRepo>()));
-    gh.factory<_i208.AuthCubit>(
-        () => _i208.AuthCubit(loginUseCase: gh<_i188.LoginUsecase>()));
+    gh.factory<_i208.AuthCubit>(() => _i208.AuthCubit(
+          loginUseCase: gh<_i188.LoginUsecase>(),
+          registerUseCase: gh<_i941.RegisterUsecase>(),
+        ));
     return this;
   }
 }

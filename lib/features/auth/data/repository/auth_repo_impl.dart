@@ -4,7 +4,9 @@ import 'package:dio/dio.dart';
 import 'package:ecommerce_app/core/network/error/error_model.dart';
 import 'package:ecommerce_app/features/auth/data/data_source/auth_data_source.dart';
 import 'package:ecommerce_app/features/auth/data/model/request_model/login_request_model.dart';
+import 'package:ecommerce_app/features/auth/data/model/request_model/register_request_model.dart';
 import 'package:ecommerce_app/features/auth/data/model/response_model/login_response_model.dart';
+import 'package:ecommerce_app/features/auth/data/model/response_model/register_response_model.dart';
 import 'package:ecommerce_app/features/auth/domain/entity/user_entity.dart';
 import 'package:ecommerce_app/features/auth/domain/repository/auth_repo.dart';
 import 'package:injectable/injectable.dart';
@@ -22,6 +24,20 @@ class AuthRepoImpl implements AuthRepo {
         throw AuthError(errorMessage: response.message ?? 'Login failed');
       }
       return loggedInUser.toDomain();
+    } on DioException catch (e) {
+      throw ErrorModel.fromDioException(e);
+    }
+  }
+
+  @override
+  Future<UserEntity>register(UserEntity user)async {
+    try {
+      RegisterResponseModel response=await _authDataSource.register(RegisterRequestModel.fromDomain(user));
+      final registeredUser = response.user;
+      if (registeredUser == null) {
+        throw AuthError(errorMessage: response.message ?? 'Registration failed');
+      }
+      return registeredUser.toDomain();
     } on DioException catch (e) {
       throw ErrorModel.fromDioException(e);
     }

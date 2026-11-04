@@ -19,10 +19,5 @@ class LoginRequestModel {
     );
   }
 
-  UserEntity toDomain() {
-    return UserEntity(
-      email: email,
-      password: password,
-    );
-  }
+ 
 }
