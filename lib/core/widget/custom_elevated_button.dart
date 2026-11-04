@@ -12,12 +12,15 @@ class CustomElevatedButton extends StatelessWidget {
   final void Function() onTap;
   final TextStyle? textStyle;
   final bool isStadiumBorder;
+  final bool isLoading;
+
 
   const CustomElevatedButton(
       {super.key,
       this.prefixIcon,
       this.textStyle,
       this.isStadiumBorder = true,
+      this.isLoading = false,
       this.backgroundColor,
       this.radius,
       this.suffixIcon,
@@ -25,6 +28,7 @@ class CustomElevatedButton extends StatelessWidget {
       required this.onTap});
 
   @override
+
   Widget build(BuildContext context) {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
@@ -33,10 +37,28 @@ class CustomElevatedButton extends StatelessWidget {
               : RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(17.r)),
           backgroundColor: backgroundColor ?? ColorManager.primary,
+          // keep the same color while disabled (loading) instead of grey
+          disabledBackgroundColor: backgroundColor ?? ColorManager.primary,
           padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 14.h),
         ),
-        onPressed: onTap,
-        child: Row(
+        // null disables the button so the user can't send the request twice
+        onPressed: isLoading ? null : onTap,
+        child: isLoading
+            // a full-width Row keeps the button the same size as normal
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 28.h,
+                    width: 28.h,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      color: textStyle?.color ?? ColorManager.white,
+                    ),
+                  ),
+                ],
+              )
+            : Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             prefixIcon ?? const SizedBox(),
