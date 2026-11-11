@@ -1,12 +1,14 @@
 import 'package:ecommerce_app/core/di/di.dart';
 import 'package:ecommerce_app/core/routes_manager/routes.dart';
+import 'package:ecommerce_app/features/auth/domain/usecases/check_loggedin_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'core/routes_manager/route_generator.dart';
 
-void main() {
-  configureDependencies();
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await configureDependencies();
   runApp(const MainApp());
 }
 
@@ -24,7 +26,7 @@ class MainApp extends StatelessWidget {
         navigatorKey: navigatorKey,
         home: child,
         onGenerateRoute: RouteGenerator.getRoute,
-        initialRoute: Routes.signInRoute,
+        initialRoute:getIt<CheckLoggedinUsecase>()()? Routes.mainRoute : Routes.signInRoute,
       ),
     );
   }
