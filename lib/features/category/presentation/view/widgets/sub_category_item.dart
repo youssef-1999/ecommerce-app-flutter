@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecommerce_app/core/resources/assets_manager.dart';
 import 'package:ecommerce_app/core/resources/color_manager.dart';
 import 'package:ecommerce_app/core/resources/styles_manager.dart';
 import 'package:ecommerce_app/core/resources/values_manager.dart';
@@ -26,9 +28,16 @@ class SubCategoryItem extends StatelessWidget {
                   border: Border.all(color: ColorManager.primary, width: 2)),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppSize.s10),
-                child: Image.asset(
-                  image,
+                child: CachedNetworkImage(
+                  imageUrl: image,
                   fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    color: ColorManager.containerGray,
+                  ),
+                  errorWidget: (context, url, error) => Image.asset(
+                    ImageAssets.subcategoryCardImage,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),

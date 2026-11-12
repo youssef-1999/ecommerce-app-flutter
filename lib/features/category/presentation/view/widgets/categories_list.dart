@@ -1,18 +1,20 @@
 import 'package:ecommerce_app/core/resources/color_manager.dart';
 import 'package:ecommerce_app/core/resources/values_manager.dart';
-import 'package:ecommerce_app/features/main_layout/categories/presentation/widgets/category_item.dart';
+import 'package:ecommerce_app/features/category/domain/entity/category_entity.dart';
+import 'package:ecommerce_app/features/category/presentation/view/widgets/category_item.dart';
 import 'package:flutter/material.dart';
 
-class CategoriesList extends StatefulWidget {
-  const CategoriesList({super.key});
+class CategoriesList extends StatelessWidget {
+  final List<CategoryEntity> categories;
+  final int selectedIndex;
+  final void Function(int index) onItemClick;
 
-  @override
-  State<CategoriesList> createState() => _CategoriesListState();
-}
-
-class _CategoriesListState extends State<CategoriesList> {
-  // Index of the currently selected category
-  int selectedIndex = 0;
+  const CategoriesList({
+    super.key,
+    required this.categories,
+    required this.selectedIndex,
+    required this.onItemClick,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,27 +38,21 @@ class _CategoriesListState extends State<CategoriesList> {
           bottomLeft: Radius.circular(AppSize.s12),
         ),
       ),
-
-      // the categories items list
       child: ClipRRect(
-        // clip the corners of the container that hold the list view
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(AppSize.s12),
           bottomLeft: Radius.circular(AppSize.s12),
         ),
         child: ListView.builder(
-          itemCount: 20,
-          itemBuilder: (context, index) => CategoryItem(index,
-              "Laptops & Electronics", selectedIndex == index, onItemClick),
+          itemCount: categories.length,
+          itemBuilder: (context, index) => CategoryItem(
+            index,
+            categories[index].name,
+            selectedIndex == index,
+            onItemClick,
+          ),
         ),
       ),
     ));
-  }
-
-  // callback function to change the selected index
-  onItemClick(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
   }
 }

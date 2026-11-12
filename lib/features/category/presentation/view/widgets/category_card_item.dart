@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecommerce_app/core/resources/assets_manager.dart';
 import 'package:ecommerce_app/core/resources/color_manager.dart';
 import 'package:ecommerce_app/core/resources/font_manager.dart';
 import 'package:ecommerce_app/core/resources/styles_manager.dart';
@@ -24,10 +26,19 @@ class CategoryCardItem extends StatelessWidget {
         child: Stack(
           children: [
             // Background image for the category
-            Image.asset(
-              image,
+            CachedNetworkImage(
+              imageUrl: image,
               fit: BoxFit.cover,
               width: double.infinity,
+              height: double.infinity,
+              placeholder: (context, url) => Container(
+                color: ColorManager.containerGray,
+              ),
+              errorWidget: (context, url, error) => Image.asset(
+                ImageAssets.categoryCardImage,
+                fit: BoxFit.cover,
+                width: double.infinity,
+              ),
             ),
             // Overlay with category title and button
             Positioned.fill(

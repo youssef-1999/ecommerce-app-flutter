@@ -24,6 +24,18 @@ import '../../features/auth/domain/usecases/check_loggedin_usecase.dart'
 import '../../features/auth/domain/usecases/login_usecase.dart' as _i188;
 import '../../features/auth/domain/usecases/register_usecase.dart' as _i941;
 import '../../features/auth/presentation/view_model/auth_cubit.dart' as _i208;
+import '../../features/category/data/api/category_api.dart' as _i74;
+import '../../features/category/data/data_source/category_data_source.dart'
+    as _i484;
+import '../../features/category/data/repository/category_repo_impl.dart'
+    as _i422;
+import '../../features/category/domain/repository/category_repo.dart' as _i408;
+import '../../features/category/domain/usecases/get_categories_usecase.dart'
+    as _i125;
+import '../../features/category/domain/usecases/get_sub_categories_usecase.dart'
+    as _i296;
+import '../../features/category/presentation/view_model/category_cubit.dart'
+    as _i345;
 import 'module/dio.module.dart' as _i688;
 import 'module/shared_prefernces.module.dart' as _i1031;
 
@@ -46,6 +58,11 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.factory<_i302.AuthApi>(() => _i302.AuthApi(gh<_i361.Dio>()));
+    gh.factory<_i74.CategoryApi>(() => _i74.CategoryApi(gh<_i361.Dio>()));
+    gh.factory<_i484.CategoryDataSource>(
+        () => _i484.CategoryRemoteDataSource(gh<_i74.CategoryApi>()));
+    gh.factory<_i408.CategoryRepo>(
+        () => _i422.CategoryRepoImpl(gh<_i484.CategoryDataSource>()));
     gh.factory<_i364.AuthDataSource>(
         () => _i364.AuthRemoteDataSource(gh<_i302.AuthApi>()));
     gh.factory<_i976.AuthRepo>(() => _i751.AuthRepoImpl(
@@ -54,13 +71,21 @@ extension GetItInjectableX on _i174.GetIt {
         ));
     gh.factory<_i941.RegisterUsecase>(
         () => _i941.RegisterUsecase(gh<_i976.AuthRepo>()));
-    gh.factory<_i583.CheckLoggedinUsecase>(
-        () => _i583.CheckLoggedinUsecase(authRepo: gh<_i976.AuthRepo>()));
     gh.factory<_i188.LoginUsecase>(
         () => _i188.LoginUsecase(authRepo: gh<_i976.AuthRepo>()));
+    gh.singleton<_i583.CheckLoggedinUsecase>(
+        () => _i583.CheckLoggedinUsecase(authRepo: gh<_i976.AuthRepo>()));
+    gh.factory<_i125.GetCategoriesUsecase>(() =>
+        _i125.GetCategoriesUsecase(categoryRepo: gh<_i408.CategoryRepo>()));
+    gh.factory<_i296.GetSubCategoriesUsecase>(() =>
+        _i296.GetSubCategoriesUsecase(categoryRepo: gh<_i408.CategoryRepo>()));
     gh.factory<_i208.AuthCubit>(() => _i208.AuthCubit(
           loginUseCase: gh<_i188.LoginUsecase>(),
           registerUseCase: gh<_i941.RegisterUsecase>(),
+        ));
+    gh.factory<_i345.CategoryCubit>(() => _i345.CategoryCubit(
+          getCategoriesUsecase: gh<_i125.GetCategoriesUsecase>(),
+          getSubCategoriesUsecase: gh<_i296.GetSubCategoriesUsecase>(),
         ));
     return this;
   }
