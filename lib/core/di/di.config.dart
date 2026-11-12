@@ -36,6 +36,20 @@ import '../../features/category/domain/usecases/get_sub_categories_usecase.dart'
     as _i296;
 import '../../features/category/presentation/view_model/category_cubit.dart'
     as _i345;
+import '../../features/products/data/api/products_api.dart' as _i960;
+import '../../features/products/data/data_source/products_data_source.dart'
+    as _i861;
+import '../../features/products/data/repository/products_repo_impl.dart'
+    as _i99;
+import '../../features/products/domain/repository/products_repo.dart' as _i466;
+import '../../features/products/domain/usecases/get_product_details_usecase.dart'
+    as _i606;
+import '../../features/products/domain/usecases/get_products_usecase.dart'
+    as _i15;
+import '../../features/products/presentation/view_model/product_details_cubit.dart'
+    as _i520;
+import '../../features/products/presentation/view_model/products_cubit.dart'
+    as _i386;
 import 'module/dio.module.dart' as _i688;
 import 'module/shared_prefernces.module.dart' as _i1031;
 
@@ -59,22 +73,35 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i302.AuthApi>(() => _i302.AuthApi(gh<_i361.Dio>()));
     gh.factory<_i74.CategoryApi>(() => _i74.CategoryApi(gh<_i361.Dio>()));
+    gh.factory<_i960.ProductsApi>(() => _i960.ProductsApi(gh<_i361.Dio>()));
     gh.factory<_i484.CategoryDataSource>(
         () => _i484.CategoryRemoteDataSource(gh<_i74.CategoryApi>()));
     gh.factory<_i408.CategoryRepo>(
         () => _i422.CategoryRepoImpl(gh<_i484.CategoryDataSource>()));
+    gh.factory<_i861.ProductsDataSource>(
+        () => _i861.ProductsRemoteDataSource(gh<_i960.ProductsApi>()));
+    gh.factory<_i466.ProductsRepo>(
+        () => _i99.ProductsRepoImpl(gh<_i861.ProductsDataSource>()));
+    gh.factory<_i606.GetProductDetailsUsecase>(() =>
+        _i606.GetProductDetailsUsecase(productsRepo: gh<_i466.ProductsRepo>()));
+    gh.factory<_i15.GetProductsUsecase>(
+        () => _i15.GetProductsUsecase(productsRepo: gh<_i466.ProductsRepo>()));
     gh.factory<_i364.AuthDataSource>(
         () => _i364.AuthRemoteDataSource(gh<_i302.AuthApi>()));
     gh.factory<_i976.AuthRepo>(() => _i751.AuthRepoImpl(
           gh<_i364.AuthDataSource>(),
           gh<_i460.SharedPreferences>(),
         ));
+    gh.factory<_i520.ProductDetailsCubit>(() => _i520.ProductDetailsCubit(
+        getProductDetailsUsecase: gh<_i606.GetProductDetailsUsecase>()));
     gh.factory<_i941.RegisterUsecase>(
         () => _i941.RegisterUsecase(gh<_i976.AuthRepo>()));
     gh.factory<_i188.LoginUsecase>(
         () => _i188.LoginUsecase(authRepo: gh<_i976.AuthRepo>()));
     gh.singleton<_i583.CheckLoggedinUsecase>(
         () => _i583.CheckLoggedinUsecase(authRepo: gh<_i976.AuthRepo>()));
+    gh.factory<_i386.ProductsCubit>(() =>
+        _i386.ProductsCubit(getProductsUsecase: gh<_i15.GetProductsUsecase>()));
     gh.factory<_i125.GetCategoriesUsecase>(() =>
         _i125.GetCategoriesUsecase(categoryRepo: gh<_i408.CategoryRepo>()));
     gh.factory<_i296.GetSubCategoriesUsecase>(() =>

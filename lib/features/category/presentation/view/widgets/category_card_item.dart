@@ -66,7 +66,7 @@ class CategoryCardItem extends StatelessWidget {
                         width: 110.w,
                         height: 35.h,
                         child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () => navigation(),
                             style: ElevatedButton.styleFrom(
                                 fixedSize: Size(120.w, 30.h),
                                 padding: EdgeInsets.symmetric(

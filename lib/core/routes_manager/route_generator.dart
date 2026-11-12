@@ -4,6 +4,7 @@ import 'package:ecommerce_app/features/auth/presentation/view/sign_in_screen.dar
 import 'package:ecommerce_app/features/auth/presentation/view/sign_up_screen.dart';
 import 'package:ecommerce_app/features/cart/screens/cart_screen.dart';
 import 'package:ecommerce_app/features/main_layout/main_layout.dart';
+import 'package:ecommerce_app/features/products/domain/entity/products_params_entity.dart';
 import 'package:ecommerce_app/features/product_details/presentation/screen/product_details.dart';
 import 'package:ecommerce_app/features/products_screen/presentation/screens/products_screen.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,12 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const MainLayout());
 
       case Routes.productsScreenRoute:
-        return MaterialPageRoute(builder: (_) => const ProductsScreen());
+        // arguments = the filters (e.g. which category) sent by the screen
+        // that navigated here. No arguments → show all products.
+        return MaterialPageRoute(
+            builder: (_) => ProductsScreen(
+                params: settings.arguments as ProductsParamsEntity? ??
+                    const ProductsParamsEntity()));
 
       case Routes.productDetails:
         return MaterialPageRoute(builder: (_) => const ProductDetails());

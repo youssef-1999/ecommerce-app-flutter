@@ -1,28 +1,47 @@
+import 'package:ecommerce_app/core/di/di.dart';
 import 'package:ecommerce_app/core/resources/values_manager.dart';
+import 'package:ecommerce_app/features/products/domain/entity/products_params_entity.dart';
+import 'package:ecommerce_app/features/products/presentation/view_model/products_cubit.dart';
+import 'package:ecommerce_app/features/products/presentation/view_model/products_state.dart';
 import 'package:ecommerce_app/features/products_screen/presentation/widgets/custom_product_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/resources/assets_manager.dart';
 import '../../../../core/widget/home_screen_app_bar.dart';
 
 class ProductsScreen extends StatelessWidget {
-  const ProductsScreen({super.key});
+  /// Which products to load (e.g. one category). Empty = all products.
+  final ProductsParamsEntity params;
+
+  const ProductsScreen({super.key, this.params = const ProductsParamsEntity()});
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-    return Scaffold(
-      appBar: const HomeScreenAppBar(
-        automaticallyImplyLeading: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(AppPadding.p16),
-        child: Column(
-          children: [
-            Expanded(
+    return BlocProvider(
+      // "..getProducts()" creates the cubit AND starts loading right away
+      create: (context) => getIt<ProductsCubit>()..getProducts(params),
+      child: Scaffold(
+        appBar: const HomeScreenAppBar(
+          automaticallyImplyLeading: true,
+        ),
+        body: BlocBuilder<ProductsCubit, ProductsState>(
+          builder: (context, state) {
+            if (state.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state.errorMessage != null) {
+              return Center(child: Text(state.errorMessage!));
+            }
+
+            if (state.products.isEmpty) {
+              return const Center(child: Text('No products found'));
+            }
+
+            return Padding(
+              padding: const EdgeInsets.all(AppPadding.p16),
               child: GridView.builder(
-                itemCount: 20,
+                itemCount: state.products.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 8,
@@ -30,22 +49,11 @@ class ProductsScreen extends StatelessWidget {
                   childAspectRatio: 7 / 9,
                 ),
                 itemBuilder: (context, index) {
-                  return CustomProductWidget(
-                    image: ImageAssets.categoryHomeImage,
-                    title: "Nike Air Jordon",
-                    price: 1100,
-                    rating: 4.7,
-                    discountPercentage: 10,
-                    height: height,
-                    width: width,
-                    description:
-                        "Nike is a multinational corporation that designs, develops, and sells athletic footwear ,apparel, and accessories",
-                  );
+                  return CustomProductWidget(product: state.products[index]);
                 },
-                scrollDirection: Axis.vertical,
               ),
-            )
-          ],
+            );
+          },
         ),
       ),
     );

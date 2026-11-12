@@ -2,6 +2,8 @@ import 'package:ecommerce_app/core/resources/color_manager.dart';
 import 'package:ecommerce_app/core/resources/font_manager.dart';
 import 'package:ecommerce_app/core/resources/styles_manager.dart';
 import 'package:ecommerce_app/core/resources/values_manager.dart';
+import 'package:ecommerce_app/core/routes_manager/routes.dart';
+import 'package:ecommerce_app/features/products/domain/entity/products_params_entity.dart';
 import 'package:ecommerce_app/features/category/domain/entity/category_entity.dart';
 import 'package:ecommerce_app/features/category/presentation/view/widgets/category_card_item.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +41,8 @@ class SubCategoriesList extends StatelessWidget {
           // the category card
           SliverToBoxAdapter(
             child: CategoryCardItem(
-                category.name, category.image, goToCategoryProductsListScreen),
+                category.name, category.image,
+                () => goToCategoryProductsListScreen(context)),
           ),
           // spinner / message / grid
           if (isLoading)
@@ -64,11 +67,12 @@ class SubCategoriesList extends StatelessWidget {
                   (context, index) => SubCategoryItem(
                       subCategories[index].name,
                       subCategories[index].image,
-                      goToCategoryProductsListScreen),
+                      () => goToCategoryProductsListScreen(context)),
                 ),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
-                  childAspectRatio: 0.75,
+                  // width / height — smaller value = taller cell (room for 2-line titles)
+                  childAspectRatio: 0.6,
                   mainAxisSpacing: AppSize.s8,
                   crossAxisSpacing: AppSize.s8,
                 ))
@@ -77,7 +81,13 @@ class SubCategoriesList extends StatelessWidget {
     );
   }
 
-  goToCategoryProductsListScreen() {
-    // todo implement this function
+  /// Opens the products screen filtered by the selected category
+  /// (sent to the API as `category[in]=<id>`).
+  void goToCategoryProductsListScreen(BuildContext context) {
+    Navigator.pushNamed(
+      context,
+      Routes.productsScreenRoute,
+      arguments: ProductsParamsEntity(categoryIn: [category.id]),
+    );
   }
 }
