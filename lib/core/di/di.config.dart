@@ -24,6 +24,18 @@ import '../../features/auth/domain/usecases/check_loggedin_usecase.dart'
 import '../../features/auth/domain/usecases/login_usecase.dart' as _i188;
 import '../../features/auth/domain/usecases/register_usecase.dart' as _i941;
 import '../../features/auth/presentation/view_model/auth_cubit.dart' as _i208;
+import '../../features/cart/data/api/cart_api.dart' as _i209;
+import '../../features/cart/data/data_source/cart_data_source.dart' as _i851;
+import '../../features/cart/data/repository/cart_repo_impl.dart' as _i668;
+import '../../features/cart/domain/repository/cart_repo.dart' as _i210;
+import '../../features/cart/domain/usecases/add_to_cart_usecase.dart' as _i659;
+import '../../features/cart/domain/usecases/clear_cart_usecase.dart' as _i240;
+import '../../features/cart/domain/usecases/get_cart_usecase.dart' as _i179;
+import '../../features/cart/domain/usecases/remove_cart_item_usecase.dart'
+    as _i719;
+import '../../features/cart/domain/usecases/update_cart_item_count_usecase.dart'
+    as _i376;
+import '../../features/cart/presentation/view_model/cart_cubit.dart' as _i818;
 import '../../features/category/data/api/category_api.dart' as _i74;
 import '../../features/category/data/data_source/category_data_source.dart'
     as _i484;
@@ -72,6 +84,7 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.factory<_i302.AuthApi>(() => _i302.AuthApi(gh<_i361.Dio>()));
+    gh.factory<_i209.CartApi>(() => _i209.CartApi(gh<_i361.Dio>()));
     gh.factory<_i74.CategoryApi>(() => _i74.CategoryApi(gh<_i361.Dio>()));
     gh.factory<_i960.ProductsApi>(() => _i960.ProductsApi(gh<_i361.Dio>()));
     gh.factory<_i484.CategoryDataSource>(
@@ -86,8 +99,12 @@ extension GetItInjectableX on _i174.GetIt {
         _i606.GetProductDetailsUsecase(productsRepo: gh<_i466.ProductsRepo>()));
     gh.factory<_i15.GetProductsUsecase>(
         () => _i15.GetProductsUsecase(productsRepo: gh<_i466.ProductsRepo>()));
+    gh.factory<_i851.CartDataSource>(
+        () => _i851.CartRemoteDataSource(gh<_i209.CartApi>()));
     gh.factory<_i364.AuthDataSource>(
         () => _i364.AuthRemoteDataSource(gh<_i302.AuthApi>()));
+    gh.factory<_i210.CartRepo>(
+        () => _i668.CartRepoImpl(gh<_i851.CartDataSource>()));
     gh.factory<_i976.AuthRepo>(() => _i751.AuthRepoImpl(
           gh<_i364.AuthDataSource>(),
           gh<_i460.SharedPreferences>(),
@@ -106,6 +123,16 @@ extension GetItInjectableX on _i174.GetIt {
         _i125.GetCategoriesUsecase(categoryRepo: gh<_i408.CategoryRepo>()));
     gh.factory<_i296.GetSubCategoriesUsecase>(() =>
         _i296.GetSubCategoriesUsecase(categoryRepo: gh<_i408.CategoryRepo>()));
+    gh.factory<_i659.AddToCartUsecase>(
+        () => _i659.AddToCartUsecase(cartRepo: gh<_i210.CartRepo>()));
+    gh.factory<_i240.ClearCartUsecase>(
+        () => _i240.ClearCartUsecase(cartRepo: gh<_i210.CartRepo>()));
+    gh.factory<_i179.GetCartUsecase>(
+        () => _i179.GetCartUsecase(cartRepo: gh<_i210.CartRepo>()));
+    gh.factory<_i719.RemoveCartItemUsecase>(
+        () => _i719.RemoveCartItemUsecase(cartRepo: gh<_i210.CartRepo>()));
+    gh.factory<_i376.UpdateCartItemCountUsecase>(
+        () => _i376.UpdateCartItemCountUsecase(cartRepo: gh<_i210.CartRepo>()));
     gh.factory<_i208.AuthCubit>(() => _i208.AuthCubit(
           loginUseCase: gh<_i188.LoginUsecase>(),
           registerUseCase: gh<_i941.RegisterUsecase>(),
@@ -113,6 +140,13 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i345.CategoryCubit>(() => _i345.CategoryCubit(
           getCategoriesUsecase: gh<_i125.GetCategoriesUsecase>(),
           getSubCategoriesUsecase: gh<_i296.GetSubCategoriesUsecase>(),
+        ));
+    gh.lazySingleton<_i818.CartCubit>(() => _i818.CartCubit(
+          getCartUsecase: gh<_i179.GetCartUsecase>(),
+          addToCartUsecase: gh<_i659.AddToCartUsecase>(),
+          updateCartItemCountUsecase: gh<_i376.UpdateCartItemCountUsecase>(),
+          removeCartItemUsecase: gh<_i719.RemoveCartItemUsecase>(),
+          clearCartUsecase: gh<_i240.ClearCartUsecase>(),
         ));
     return this;
   }

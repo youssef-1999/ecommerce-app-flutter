@@ -4,7 +4,8 @@ import 'package:ecommerce_app/core/resources/styles_manager.dart';
 import 'package:ecommerce_app/core/resources/values_manager.dart';
 import 'package:ecommerce_app/core/routes_manager/routes.dart';
 import 'package:ecommerce_app/core/widget/product_counter.dart';
-import 'package:ecommerce_app/features/cart/widgets/color_and_size_cart_item.dart';
+import 'package:ecommerce_app/features/cart/presentation/view/widgets/color_and_size_cart_item.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -13,20 +14,21 @@ class CartItemWidget extends StatelessWidget {
     super.key,
     required this.imagePath,
     required this.title,
-    required this.color,
-    required this.colorName,
-    required this.size,
+    this.color,
+    this.colorName,
+    this.size,
     required this.price,
     required this.onDeleteTap,
     required this.quantity,
     required this.onIncrementTap,
     required this.onDecrementTap,
   });
-  final String imagePath;
+  final String imagePath; // network image url
   final String title;
-  final Color color;
-  final String colorName;
-  final int size;
+  // Optional: the cart API doesn't send color/size, so the row is hidden when null.
+  final Color? color;
+  final String? colorName;
+  final int? size;
   final int price;
   final void Function() onDeleteTap;
   final int quantity;
@@ -54,9 +56,10 @@ class CartItemWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(15.r),
               border: Border.all(color: ColorManager.primary.withValues(alpha: 0.3)),
             ),
-            child: Image.asset(
-              imagePath,
+            child: CachedNetworkImage(
+              imageUrl: imagePath,
               fit: BoxFit.cover,
+              errorWidget: (_, __, ___) => const Icon(Icons.broken_image),
               height: isPortrait ? height * 0.142 : height * 0.23,
               width: isPortrait ? width * 0.29 : 165.w,
             ),
@@ -102,11 +105,12 @@ class CartItemWidget extends StatelessWidget {
                   // SizedBox(height: 7.h),
                   const Spacer(),
                   // display color and size===================
-                  ColorAndSizeCartItem(
-                    color: color,
-                    colorName: colorName,
-                    size: size,
-                  ),
+                  if (color != null && colorName != null && size != null)
+                    ColorAndSizeCartItem(
+                      color: color!,
+                      colorName: colorName!,
+                      size: size!,
+                    ),
                   const Spacer(),
                   // display price and quantity =================
                   Row(
