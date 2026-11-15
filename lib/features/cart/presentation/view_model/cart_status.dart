@@ -7,6 +7,7 @@ class CartStatus extends Equatable {
   final bool isLoading; // loading the whole cart
   final String? updatingProductId; // the one item showing a small spinner (+ / - / delete)
   final String? errorMessage;
+  final String? successMessage; // e.g. "Added to cart ✅" for a SnackBar
 
   const CartStatus({
     this.cart = const CartEntity.empty(),
@@ -14,7 +15,12 @@ class CartStatus extends Equatable {
     this.isLoading = false,
     this.updatingProductId,
     this.errorMessage,
+    this.successMessage,
   });
+
+  /// true if this product is already in the cart (→ show 🗑️ instead of ➕).
+  bool isInCart(String productId) =>
+      cart.items.any((item) => item.productId == productId);
 
   CartStatus copyWith({
     CartEntity? cart,
@@ -22,6 +28,7 @@ class CartStatus extends Equatable {
     bool? isLoading,
     String? updatingProductId,
     String? errorMessage,
+    String? successMessage,
   }) {
     return CartStatus(
       cart: cart ?? this.cart,
@@ -31,10 +38,17 @@ class CartStatus extends Equatable {
       // unless you pass a new value.
       updatingProductId: updatingProductId,
       errorMessage: errorMessage,
+      successMessage: successMessage,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [cart, cartItemsCount, isLoading, updatingProductId, errorMessage];
+  List<Object?> get props => [
+        cart,
+        cartItemsCount,
+        isLoading,
+        updatingProductId,
+        errorMessage,
+        successMessage,
+      ];
 }

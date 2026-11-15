@@ -4,8 +4,11 @@ import 'package:ecommerce_app/core/resources/color_manager.dart';
 import 'package:ecommerce_app/core/resources/styles_manager.dart';
 import 'package:ecommerce_app/core/routes_manager/routes.dart';
 import 'package:ecommerce_app/core/widget/heart_button.dart';
+import 'package:ecommerce_app/features/cart/presentation/view_model/cart_cubit.dart';
+import 'package:ecommerce_app/features/cart/presentation/view_model/cart_status.dart';
 import 'package:ecommerce_app/features/products/domain/entity/product_entity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// One product card in the products grid.
@@ -130,21 +133,38 @@ class CustomProductWidget extends StatelessWidget {
                           color: ColorManager.starRateColor,
                         ),
                         const Spacer(),
-                        InkWell(
-                          onTap: () {},
-                          customBorder: const CircleBorder(),
-                          child: Container(
-                            width: 30.r,
-                            height: 30.r,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: ColorManager.primary,
-                            ),
-                            child: const Icon(
-                              Icons.add,
-                              color: Colors.white,
-                            ),
-                          ),
+                        // Redraw ONLY this button when "is it in the cart?" changes.
+                        BlocBuilder<CartCubit, CartStatus>(
+                          buildWhen: (prev, curr) =>
+                              prev.isInCart(product.id) !=
+                              curr.isInCart(product.id),
+                          builder: (context, state) {
+                            final inCart = state.isInCart(product.id);
+                            final cubit = context.read<CartCubit>();
+                            return InkWell(
+                              // in cart → remove it, not in cart → add it
+                              onTap: () => inCart
+                                  ? cubit.removeItem(product.id)
+                                  : cubit.addToCart(product.id),
+                              customBorder: const CircleBorder(),
+                              child: Container(
+                                width: 30.r,
+                                height: 30.r,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  // red when it's in the cart, so it stands out
+                                  color: inCart
+                                      ? ColorManager.error
+                                      : ColorManager.primary,
+                                ),
+                                child: Icon(
+                                  inCart ? Icons.delete_outline : Icons.add,
+                                  color: Colors.white,
+                                  size: 20.r,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),

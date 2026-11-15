@@ -2,6 +2,7 @@ import 'package:ecommerce_app/core/di/di.dart';
 import 'package:ecommerce_app/core/resources/assets_manager.dart';
 import 'package:ecommerce_app/core/resources/color_manager.dart';
 import 'package:ecommerce_app/core/widget/home_screen_app_bar.dart';
+import 'package:ecommerce_app/features/cart/presentation/view_model/cart_cubit.dart';
 import 'package:ecommerce_app/features/category/presentation/view/categories_tab.dart';
 import 'package:ecommerce_app/features/category/presentation/view_model/category_cubit.dart';
 import 'package:ecommerce_app/features/main_layout/favourite/presentation/favourite_screen.dart';
@@ -19,6 +20,12 @@ class MainLayout extends StatefulWidget {
 }
 
 class _MainLayoutState extends State<MainLayout> {
+@override
+void initState() {
+  super.initState();
+  // Load categories when the MainLayout is initialized
+  getIt<CartCubit>().getCart();
+}
   int currentIndex = 0;
   List<Widget> tabs = [
     const HomeTab(),

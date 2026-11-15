@@ -46,8 +46,16 @@ class CartCubit extends Cubit<CartStatus> {
   Future<void> addToCart(String productId) async {
     emit(state.copyWith(updatingProductId: productId));
     try {
-      final count = await addToCartUsecase(productId);
-      emit(state.copyWith(cartItemsCount: count));
+      await addToCartUsecase(productId);
+      // The "add" answer only tells us the NUMBER of items, not WHICH items.
+      // Ask for the full cart so every product card knows if it's in the cart
+      // (to show 🗑️ instead of ➕).
+      final cart = await getCartUsecase();
+      emit(state.copyWith(
+        cart: cart,
+        cartItemsCount: cart.itemsCount,
+        successMessage: 'Added to cart ✅',
+      ));
     } on ErrorModel catch (e) {
       emit(state.copyWith(errorMessage: e.message));
     } catch (e) {
@@ -68,7 +76,11 @@ class CartCubit extends Cubit<CartStatus> {
   }
 
   Future<void> removeItem(String productId) async {
-    await _runOnItem(productId, () => removeCartItemUsecase(productId));
+    await _runOnItem(
+      productId,
+      () => removeCartItemUsecase(productId),
+      successMessage: 'Removed from cart 🗑️',
+    );
   }
 
   Future<void> clearCart() async {
@@ -91,11 +103,18 @@ class CartCubit extends Cubit<CartStatus> {
   /// Shared code for + / - / delete: show a spinner on that one item,
   /// call the server, then show the new cart it sends back.
   Future<void> _runOnItem(
-      String productId, Future<CartEntity> Function() action) async {
+    String productId,
+    Future<CartEntity> Function() action, {
+    String? successMessage, // optional text for the SnackBar
+  }) async {
     emit(state.copyWith(updatingProductId: productId));
     try {
       final cart = await action();
-      emit(state.copyWith(cart: cart, cartItemsCount: cart.itemsCount));
+      emit(state.copyWith(
+        cart: cart,
+        cartItemsCount: cart.itemsCount,
+        successMessage: successMessage,
+      ));
     } on ErrorModel catch (e) {
       emit(state.copyWith(errorMessage: e.message));
     } catch (e) {
